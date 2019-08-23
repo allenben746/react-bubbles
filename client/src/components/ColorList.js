@@ -1,30 +1,45 @@
 import React, { useState } from "react";
 import axios from "axios";
+import { axiosWithAuth } from "../utils/axiosWithAuth";
 
+//Placeholder for the iniital color
 const initialColor = {
   color: "",
   code: { hex: "" }
 };
 
+//The functional component
 const ColorList = ({ colors, updateColors }) => {
   console.log(colors);
   const [editing, setEditing] = useState(false);
   const [colorToEdit, setColorToEdit] = useState(initialColor);
 
-  const editColor = color => {
+  //Method
+  const changeColor = color => {
     setEditing(true);
     setColorToEdit(color);
   };
 
+  //Method
   const saveEdit = e => {
-    e.preventDefault();
-    // Make a put request to save your updated color
-    // think about where will you get the id from...
-    // where is is saved right now?
+    axiosWithAuth()
+      .put(`http://localhost:5000/api/colors/${colorToEdit.id}`, colorToEdit)
+      .then(res => {
+        console.log('PUT response', res)
+
+      })
+      .catch(err => console.log(err.response))
   };
 
-  const deleteColor = color => {
-    // make a delete request to delete this color
+  //Method
+  const removeColor = color => {
+    
+    axiosWithAuth()
+      .delete(`http://localhost:5000/api/colors/${color.id}`)
+      .then(res => {
+        const newColorArr = colors.filter(i => i.id !== color.id)
+        updateColors(newColorArr)
+      })
   };
 
   return (
@@ -34,7 +49,7 @@ const ColorList = ({ colors, updateColors }) => {
         {colors.map(color => (
           <li key={color.color} onClick={() => editColor(color)}>
             <span>
-              <span className="delete" onClick={() => deleteColor(color)}>
+              <span className="delete" onClick={() => removeColor(color)}>
                 x
               </span>{" "}
               {color.color}
@@ -59,7 +74,7 @@ const ColorList = ({ colors, updateColors }) => {
             />
           </label>
           <label>
-            hex code:
+            hex-code:
             <input
               onChange={e =>
                 setColorToEdit({
@@ -71,13 +86,12 @@ const ColorList = ({ colors, updateColors }) => {
             />
           </label>
           <div className="button-row">
-            <button type="submit">save</button>
+            <button type="submit" onClick={() => saveEdit()}>save</button>
             <button onClick={() => setEditing(false)}>cancel</button>
           </div>
         </form>
       )}
       <div className="spacer" />
-      {/* stretch - build another form here to add a color */}
     </div>
   );
 };
