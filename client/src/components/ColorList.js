@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
-import { axiosWithAuth } from "../utils/axiosWithAuth";
+import { axiosWithAuth } from "./utils/axiosWithAuth";
 
 //Placeholder for the iniital color
 const initialColor = {
@@ -47,7 +47,7 @@ const ColorList = ({ colors, updateColors }) => {
       <p>colors</p>
       <ul>
         {colors.map(color => (
-          <li key={color.color} onClick={() => editColor(color)}>
+          <li key={color.color} onClick={() => changeColor(color)}>
             <span>
               <span className="delete" onClick={() => removeColor(color)}>
                 x
